@@ -1,0 +1,38 @@
+<html lang="en">
+<title>将xlsx转换为json</title>
+<head>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script lang="javascript" src="./xlsx.full.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#fileUploader").change(function (evt) {
+                var selectedFile = evt.target.files[0];
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var data = event.target.result;
+                    var workbook = XLSX.read(data, {
+                        type: 'binary'
+                    });
+                    workbook.SheetNames.forEach(function (sheetName) {
+                        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                        if (XL_row_object.length > 0) {
+                            document.getElementById("jsonObject").innerHTML = JSON.stringify(XL_row_object);
+                        }
+
+                    })
+                };
+                reader.onerror = function (event) {
+                    console.error("File could not be read! Code " + event.target.error.code);
+                };
+                // 读取上传文件为二进制
+                reader.readAsBinaryString(selectedFile);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <input type="file" id="fileUploader" name="fileUploader" accept=".xls, .xlsx" />
+    </br></br>
+    JSON : <label id="jsonObject"> </label>
+</body>
